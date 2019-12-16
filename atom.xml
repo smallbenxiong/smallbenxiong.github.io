@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Ben Blog</title>
+  
+  <subtitle>一个无聊的博客。</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="https://smallbenxiong.github.io/"/>
+  <updated>2019-12-16T06:15:36.764Z</updated>
+  <id>https://smallbenxiong.github.io/</id>
+  
+  <author>
+    <name>Ben</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Hello World</title>
+    <link href="https://smallbenxiong.github.io/2019/12/15/hello-world/"/>
+    <id>https://smallbenxiong.github.io/2019/12/15/hello-world/</id>
+    <published>2019-12-14T16:00:00.000Z</published>
+    <updated>2019-12-16T06:15:36.764Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><p>This is my first <a href="https://smallbenxiong.github.io/">blog</a> and my first post.</p><h1 id="关于博客"><a href="#关于博客" class="headerlink" title="关于博客"></a>关于博客</h1><p>我的<a href="https://smallbenxiong.github.io/">博客</a>是搭建在<a href="https://github.com/smallbenxiong" target="_blank" rel="noopener">GitHub</a>上使用的，网页使用了<a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>，这让我的博客搭建变得非常快捷，而且非常美观。使用的主题为<a href="https://demo.jerryc.me/" target="_blank" rel="noopener">Butterfly</a>。<br>同时这也是一篇介绍功能使用和测试功能的文章，文章持续更新！</p><h1 id="博客使用方法"><a href="#博客使用方法" class="headerlink" title="博客使用方法"></a>博客使用方法</h1><h2 id="格式设置"><a href="#格式设置" class="headerlink" title="格式设置"></a>格式设置</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title:</span><br><span class="line">date:</span><br><span class="line">tags:</span><br><span class="line">categories:</span><br><span class="line">keywords:</span><br><span class="line">description:</span><br><span class="line">top_img: （除非特定需要，可以不写）</span><br><span class="line">comments  是否显示评论（除非设置false,可以不写）</span><br><span class="line">cover:  缩略图</span><br><span class="line">toc:  是否显示toc （除非特定文章设置，可以不写）</span><br><span class="line">toc_number: 是否显示toc数字 （除非特定文章设置，可以不写）</span><br><span class="line">copyright: 是否显示版权 （除非特定文章设置，可以不写）</span><br><span class="line">default_cover:</span><br><span class="line">top: </span><br><span class="line">---</span><br></pre></td></tr></table></figure><h3 id="不显示版权"><a href="#不显示版权" class="headerlink" title="不显示版权"></a>不显示版权</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">如果有文章（例如：转载文章）不需要显示版权，可以在文章Front-matter单独设置</span><br><span class="line">$ copyright: <span class="literal">false</span></span><br></pre></td></tr></table></figure><h3 id="文章封面"><a href="#文章封面" class="headerlink" title="文章封面"></a>文章封面</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">文章的markdown文档上,在Front-matter添加cover，并填上要显示的图片地址。</span><br><span class="line">当配置多张图片时，会随机选择一张作为cover。此时写法应为：</span><br><span class="line">default_cover:</span><br><span class="line">  - https://cdn.jsdelivr.net/gh/jerryc127/CDN@latest/cover/default_bg.png</span><br><span class="line">  - https://cdn.jsdelivr.net/gh/jerryc127/CDN@latest/cover/default_bg2.png</span><br><span class="line">  - https://cdn.jsdelivr.net/gh/jerryc127/CDN@latest/cover/default_bg3.png</span><br></pre></td></tr></table></figure><h3 id="文章置顶"><a href="#文章置顶" class="headerlink" title="文章置顶"></a>文章置顶</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">在文章的front-matter区域里添加top: True属性来把这篇文章置顶。</span><br><span class="line">$ top: True</span><br></pre></td></tr></table></figure><h2 id="搜索系统"><a href="#搜索系统" class="headerlink" title="搜索系统"></a>搜索系统</h2><p>搜索系统使用<a href="https://www.algolia.com/" target="_blank" rel="noopener">Algolia</a>，配置参考<a href="https://github.com/oncletom/hexo-algolia" target="_blank" rel="noopener">hexo-algolia</a>。</p><h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">export</span>(windows为<span class="built_in">set</span>) HEXO_ALGOLIA_INDEXING_KEY=&#123;your key&#125;</span><br></pre></td></tr></table></figure><h3 id="更新Algolia库"><a href="#更新Algolia库" class="headerlink" title="更新Algolia库"></a>更新Algolia库</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo algolia</span><br></pre></td></tr></table></figure><h2 id="音乐设置"><a href="#音乐设置" class="headerlink" title="音乐设置"></a>音乐设置</h2><p>使用<a href="https://github.com/MoePlayer/hexo-tag-aplayer" target="_blank" rel="noopener">hexo-tag-aplayer</a>的MeingJS插件，参考<a href="https://wiki.hushhw.cn/posts/a84d1ef1.html" target="_blank" rel="noopener">aplayer播放器配置</a> 。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. 单首设置</span><br><span class="line">$ &#123;% meting <span class="string">"3986040"</span> <span class="string">"netease"</span> <span class="string">"song"</span> <span class="string">"theme:#555"</span> <span class="string">"mutex:true"</span> <span class="string">"listmaxheight:340px"</span> <span class="string">"preload:auto"</span> %&#125;</span><br><span class="line">2. 列表设置</span><br><span class="line">$ &#123;% meting <span class="string">"627070825"</span> <span class="string">"netease"</span> <span class="string">"playlist"</span> <span class="string">"theme:#555"</span> <span class="string">"mutex:true"</span> <span class="string">"listmaxheight:340px"</span> <span class="string">"preload:auto"</span> %&#125;</span><br></pre></td></tr></table></figure><h1 id="赞助"><a href="#赞助" class="headerlink" title="赞助"></a>赞助</h1><table><thead><tr><th align="center">用户名</th><th align="center">金额/元</th><th align="center">留言</th></tr></thead><tbody><tr><td align="center">Ben</td><td align="center">99</td><td align="center">Thanks！</td></tr><tr><td align="center">…</td><td align="center">…</td><td align="center">…</td></tr></tbody></table><p>More info: <a href="https://smallbenxiong.github.io/">Ben Blog</a></p>]]></content>
+    
+    <summary type="html">
+    
+      博客的使用方法
+    
+    </summary>
+    
+    
+      <category term="Blog" scheme="https://smallbenxiong.github.io/categories/Blog/"/>
+    
+    
+      <category term="Blog" scheme="https://smallbenxiong.github.io/tags/Blog/"/>
+    
+  </entry>
+  
+</feed>
