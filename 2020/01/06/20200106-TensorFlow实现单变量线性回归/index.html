@@ -1,0 +1,427 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><title>TensorFlow | TensorFlow实现单变量线性回归 | Ben Blog</title><meta name="description" content="TensorFlow实现单变量线性回归"><meta name="keywords" content="TensorFlow,深度学习,线性回归"><meta name="author" content="Ben"><meta name="copyright" content="Ben"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="preconnect" href="//cdn.jsdelivr.net"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="TensorFlow | TensorFlow实现单变量线性回归"><meta name="twitter:description" content="TensorFlow实现单变量线性回归"><meta name="twitter:image" content="https://www.gstatic.cn/devrel-devsite/prod/v18acaed6c9e1965881c7cfa6f3f9f69e7c37603f6d253114168821ce9e70c645/tensorflow/images/lockup.svg"><meta property="og:type" content="article"><meta property="og:title" content="TensorFlow | TensorFlow实现单变量线性回归"><meta property="og:url" content="https://smallbenxiong.github.io/2020/01/06/20200106-TensorFlow%E5%AE%9E%E7%8E%B0%E5%8D%95%E5%8F%98%E9%87%8F%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/"><meta property="og:site_name" content="Ben Blog"><meta property="og:description" content="TensorFlow实现单变量线性回归"><meta property="og:image" content="https://www.gstatic.cn/devrel-devsite/prod/v18acaed6c9e1965881c7cfa6f3f9f69e7c37603f6d253114168821ce9e70c645/tensorflow/images/lockup.svg"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><script src="https://cdn.jsdelivr.net/npm/js-cookie/dist/js.cookie.min.js"></script><script>const autoChangeMode = 'false'
+var t = Cookies.get("theme");
+if (autoChangeMode == '1'){
+const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches
+const isLightMode = window.matchMedia("(prefers-color-scheme: light)").matches
+const isNotSpecified = window.matchMedia("(prefers-color-scheme: no-preference)").matches
+const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+if (t === undefined){
+  if (isLightMode) activateLightMode()
+  else if (isDarkMode) activateDarkMode()
+  else if (isNotSpecified || hasNoSupport){
+    console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+    now = new Date();
+    hour = now.getHours();
+    isNight = hour < 6 || hour >= 18
+    isNight ? activateDarkMode() : activateLightMode()
+}
+} else if (t == 'light') activateLightMode()
+else activateDarkMode()
+
+
+} else if (autoChangeMode == '2'){
+  now = new Date();
+  hour = now.getHours();
+  isNight = hour < 6 || hour >= 18
+  if(t === undefined) isNight? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode() 
+} else {
+  if ( t == 'dark' ) activateDarkMode()
+  else if ( t == 'light') activateLightMode()
+}
+
+function activateDarkMode(){
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null){
+    document.querySelector('meta[name="theme-color"]').setAttribute('content','#000')
+  }
+}
+function activateLightMode(){
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null){
+  document.querySelector('meta[name="theme-color"]').setAttribute('content','#fff')
+  }
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@latest/css/font-awesome.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.15/dist/snackbar.min.css"><link rel="canonical" href="https://smallbenxiong.github.io/2020/01/06/20200106-TensorFlow%E5%AE%9E%E7%8E%B0%E5%8D%95%E5%8F%98%E9%87%8F%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/"><link rel="next" title="Sqoop | Sqoop报错解决" href="https://smallbenxiong.github.io/2019/12/20/20191220-Sqoop%E6%8A%A5%E9%94%99%E8%A7%A3%E5%86%B3/"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.1.1/dist/instantsearch.min.css"><script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.1.1/dist/instantsearch.min.js" defer></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script><script src="https://cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: {"appId":"JUCF6SIZ0I","apiKey":"704198e89a5f8a6d8fffde9b29c9b183","indexName":"smallbenxiong_hexo","hits":{"per_page":10},"languages":{"input_placeholder":"搜索文章","hits_empty":"找不到您查询的内容:${query}","hits_stats":"找到 ${hits} 条结果，用时 ${time} 毫秒"}},
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"cookieDomain":"https://xxx/","msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简"},
+  highlight_copy: 'true',
+  highlight_lang: 'true',
+  highlight_shrink: 'false',
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    title: 'Snackbar.bookmark.title',
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  copyright: {"languages":{"author":"作者: Ben","link":"链接: https://smallbenxiong.github.io/2020/01/06/20200106-TensorFlow%E5%AE%9E%E7%8E%B0%E5%8D%95%E5%8F%98%E9%87%8F%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/","source":"来源: Ben Blog","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  copy_copyright_js: true,
+  ClickShowText: undefined,
+  medium_zoom: 'true',
+  Snackbar: {"bookmark":{"title":"Snackbar.bookmark.title","message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#2d3035","position":"bottom-right"}
+  
+}</script><meta name="generator" content="Hexo 4.1.1"><link rel="alternate" href="/atom.xml" title="Ben Blog" type="application/atom+xml">
+</head><body><div id="header"> <div id="page-header"><span class="pull_left" id="blog_name"><a class="blog_title" id="site-name" href="/">Ben Blog</a></span><i class="fa fa-bars fa-fw toggle-menu pull_right close" aria-hidden="true"></i><span class="pull_right menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/CV/"><i class="fa-fw fa fa-file"></i><span> CV</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-list" aria-hidden="true"></i><span> List</span><i class="fa fa-chevron-down menus-expand" aria-hidden="true"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fa fa-music"></i><span> Music</span></a></li><li><a class="site-page" href="/demo/"><i class="fa-fw fa fa-file"></i><span> demo</span></a></li></ul></div></div></span><span class="pull_right" id="search_button"><a class="site-page social-icon search"><i class="fa fa-search fa-fw"></i><span> Search</span></a></span></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="lazyload avatar_img" src="https://avatars3.githubusercontent.com/u/33283932?s=460&amp;v=4" onerror="onerror=null;src='/img/friend_404.gif'"></div><div class="mobile_post_data"><div class="mobile_data_item is_center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">3</div></a></div></div><div class="mobile_data_item is_center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">8</div></a></div></div><div class="mobile_data_item is_center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">3</div></a></div></div></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/CV/"><i class="fa-fw fa fa-file"></i><span> CV</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-list" aria-hidden="true"></i><span> List</span><i class="fa fa-chevron-down menus-expand" aria-hidden="true"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fa fa-music"></i><span> Music</span></a></li><li><a class="site-page" href="/demo/"><i class="fa-fw fa fa-file"></i><span> demo</span></a></li></ul></div></div></div><div id="mobile-sidebar-toc"><div class="toc_mobile_headline">目录</div><ol class="toc_mobile_items"><li class="toc_mobile_items-item toc_mobile_items-level-1"><a class="toc_mobile_items-link" href="#TensorFlow实现单变量线性回归"><span class="toc_mobile_items-number">1.</span> <span class="toc_mobile_items-text">TensorFlow实现单变量线性回归</span></a><ol class="toc_mobile_items-child"><li class="toc_mobile_items-item toc_mobile_items-level-2"><a class="toc_mobile_items-link" href="#生成人工数据集"><span class="toc_mobile_items-number">1.1.</span> <span class="toc_mobile_items-text">生成人工数据集</span></a><ol class="toc_mobile_items-child"><li class="toc_mobile_items-item toc_mobile_items-level-3"><a class="toc_mobile_items-link" href="#matplotlib画出生成结果"><span class="toc_mobile_items-number">1.1.1.</span> <span class="toc_mobile_items-text">matplotlib画出生成结果</span></a></li></ol></li><li class="toc_mobile_items-item toc_mobile_items-level-2"><a class="toc_mobile_items-link" href="#构建模型"><span class="toc_mobile_items-number">1.2.</span> <span class="toc_mobile_items-text">构建模型</span></a><ol class="toc_mobile_items-child"><li class="toc_mobile_items-item toc_mobile_items-level-3"><a class="toc_mobile_items-link" href="#定义x和y的占位符"><span class="toc_mobile_items-number">1.2.1.</span> <span class="toc_mobile_items-text">定义x和y的占位符</span></a></li><li class="toc_mobile_items-item toc_mobile_items-level-3"><a class="toc_mobile_items-link" href="#构建回归模型"><span class="toc_mobile_items-number">1.2.2.</span> <span class="toc_mobile_items-text">构建回归模型</span></a></li><li class="toc_mobile_items-item toc_mobile_items-level-3"><a class="toc_mobile_items-link" href="#创建变量"><span class="toc_mobile_items-number">1.2.3.</span> <span class="toc_mobile_items-text">创建变量</span></a></li></ol></li><li class="toc_mobile_items-item toc_mobile_items-level-2"><a class="toc_mobile_items-link" href="#训练模型"><span class="toc_mobile_items-number">1.3.</span> <span class="toc_mobile_items-text">训练模型</span></a><ol class="toc_mobile_items-child"><li class="toc_mobile_items-item toc_mobile_items-level-3"><a class="toc_mobile_items-link" href="#设置训练参数"><span class="toc_mobile_items-number">1.3.1.</span> <span class="toc_mobile_items-text">设置训练参数</span></a></li><li class="toc_mobile_items-item toc_mobile_items-level-3"><a class="toc_mobile_items-link" href="#定义损失函数"><span class="toc_mobile_items-number">1.3.2.</span> <span class="toc_mobile_items-text">定义损失函数</span></a></li><li class="toc_mobile_items-item toc_mobile_items-level-3"><a class="toc_mobile_items-link" href="#定义优化器"><span class="toc_mobile_items-number">1.3.3.</span> <span class="toc_mobile_items-text">定义优化器</span></a></li><li class="toc_mobile_items-item toc_mobile_items-level-3"><a class="toc_mobile_items-link" href="#创建会话"><span class="toc_mobile_items-number">1.3.4.</span> <span class="toc_mobile_items-text">创建会话</span></a></li><li class="toc_mobile_items-item toc_mobile_items-level-3"><a class="toc_mobile_items-link" href="#迭代训练"><span class="toc_mobile_items-number">1.3.5.</span> <span class="toc_mobile_items-text">迭代训练</span></a></li></ol></li><li class="toc_mobile_items-item toc_mobile_items-level-2"><a class="toc_mobile_items-link" href="#进行预测"><span class="toc_mobile_items-number">1.4.</span> <span class="toc_mobile_items-text">进行预测</span></a></li></ol></li></ol></div></div><div id="body-wrap"><i class="fa fa-arrow-right" id="toggle-sidebar" aria-hidden="true">     </i><div class="auto_open" id="sidebar"><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#TensorFlow实现单变量线性回归"><span class="toc-number">1.</span> <span class="toc-text">TensorFlow实现单变量线性回归</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#生成人工数据集"><span class="toc-number">1.1.</span> <span class="toc-text">生成人工数据集</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#matplotlib画出生成结果"><span class="toc-number">1.1.1.</span> <span class="toc-text">matplotlib画出生成结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#构建模型"><span class="toc-number">1.2.</span> <span class="toc-text">构建模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#定义x和y的占位符"><span class="toc-number">1.2.1.</span> <span class="toc-text">定义x和y的占位符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#构建回归模型"><span class="toc-number">1.2.2.</span> <span class="toc-text">构建回归模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#创建变量"><span class="toc-number">1.2.3.</span> <span class="toc-text">创建变量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#训练模型"><span class="toc-number">1.3.</span> <span class="toc-text">训练模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#设置训练参数"><span class="toc-number">1.3.1.</span> <span class="toc-text">设置训练参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#定义损失函数"><span class="toc-number">1.3.2.</span> <span class="toc-text">定义损失函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#定义优化器"><span class="toc-number">1.3.3.</span> <span class="toc-text">定义优化器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#创建会话"><span class="toc-number">1.3.4.</span> <span class="toc-text">创建会话</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#迭代训练"><span class="toc-number">1.3.5.</span> <span class="toc-text">迭代训练</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#进行预测"><span class="toc-number">1.4.</span> <span class="toc-text">进行预测</span></a></li></ol></li></ol></div></div></div><div id="content-outer"><div id="top-container" style="background-image: url(https://www.gstatic.cn/devrel-devsite/prod/v18acaed6c9e1965881c7cfa6f3f9f69e7c37603f6d253114168821ce9e70c645/tensorflow/images/lockup.svg)"><div id="post-info"><div id="post-title"><div class="posttitle">TensorFlow | TensorFlow实现单变量线性回归</div></div><div id="post-meta"><time class="post-meta__date"><i class="fa fa-calendar" aria-hidden="true"></i> 发表于 2020-01-06<span class="post-meta__separator">|</span><i class="fa fa-history" aria-hidden="true"></i> 更新于 2020-01-06</time><span class="post-meta__separator mobile_hidden">|</span><span class="mobile_hidden"><i class="fa fa-inbox post-meta__icon" aria-hidden="true"></i><a class="post-meta__categories" href="/categories/TensorFlow/">TensorFlow</a></span><div class="post-meta-wordcount"><i class="fa fa-file-word-o post-meta__icon" aria-hidden="true"></i><span>字数总计: </span><span class="word-count">3k</span><span class="post-meta__separator">|</span><i class="fa fa-clock-o post-meta__icon" aria-hidden="true"></i><span>阅读时长: 15 分钟</span><span class="post-meta__separator">|</span><i class="fa fa-eye post-meta__icon" aria-hidden="true">       </i><span>阅读量: </span><span id="busuanzi_value_page_pv"></span></div></div></div></div><div class="layout layout_post" id="content-inner">   <article id="post"><div class="article-container" id="post-content"><h1 id="TensorFlow实现单变量线性回归"><a href="#TensorFlow实现单变量线性回归" class="headerlink" title="TensorFlow实现单变量线性回归"></a>TensorFlow实现单变量线性回归</h1><p><strong>学习的函数为线性函数 y=2x+1</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在Jupyter中显示图像需使用matplotlib的inline模式</span></span><br><span class="line">%matplotlib inline</span><br></pre></td></tr></table></figure>
+
+<h2 id="生成人工数据集"><a href="#生成人工数据集" class="headerlink" title="生成人工数据集"></a>生成人工数据集</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 设置随机种子</span></span><br><span class="line">np.random.seed(<span class="number">5</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 直接采用np生成等差数列的方法，生成100个点，每个点的取值在-1~1之间</span></span><br><span class="line">x_data = np.linspace(<span class="number">-1</span>, <span class="number">1</span>, <span class="number">100</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># y = 2x + 1 + 噪声,其中噪声的维度与x_data一致。随机振幅，幅度设为0.4</span></span><br><span class="line">y_data = <span class="number">2</span> * x_data + <span class="number">1.0</span> + np.random.randn(*x_data.shape) * <span class="number">0.4</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># numpy.randoom.randn(d0,d1,…,dn)是从标准正态分布中返回一个或多个样本值</span></span><br><span class="line"><span class="comment"># 标准正态分布又称u分布，是以0为均值，1为标准差的正态分布，记为N(0, 1)</span></span><br><span class="line"></span><br><span class="line">np.random.randn(<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>array([ 0.79242262,  0.17076445, -1.75374086,  0.63029648,  0.49832921,
+        1.01813761, -0.84646862,  2.52080763, -1.23238611,  0.72695326])</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># x_data.shape值为一个元组</span></span><br><span class="line">x_data.shape</span><br></pre></td></tr></table></figure>
+<pre><code>(100,)</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 实参前面加上*或者**时，意味着拆包。单个*表示将元组拆成一个个单独的实参</span></span><br><span class="line"><span class="comment"># np.random.randn(*x_data.shape)和np.random.randn(100)一样</span></span><br><span class="line"></span><br><span class="line">np.random.randn(*x_data.shape)</span><br></pre></td></tr></table></figure>
+<pre><code>array([ 0.04595522, -0.48713265,  0.81613236, -0.28143012, -2.33562182,
+       -1.16727845,  0.45765807,  2.23796561, -1.4812592 , -0.01694532,
+        1.45073354,  0.60687032, -0.37562084, -1.42192455, -1.7811513 ,
+       -0.74790579, -0.36840953, -2.24911813, -1.69367504,  0.30364847,
+       -0.40899234, -0.75483059, -0.40751917, -0.81262476,  0.92751621,
+        1.63995407,  2.07361553,  0.70979786,  0.74715259,  1.46309548,
+        1.73844881,  1.46520488,  1.21228341, -0.6346525 , -1.5996985 ,
+        0.87715281, -0.09383245, -0.05567103, -0.88942073, -1.30095145,
+        1.40216662,  0.46510099, -1.06503262,  0.39042061,  0.30560017,
+        0.52184949,  2.23327081, -0.0347021 , -1.27962318,  0.03654264,
+       -0.64635659,  0.54856784,  0.21054246,  0.34650175, -0.56705117,
+        0.41367881, -0.51025606,  0.51725935, -0.30100513, -1.11840643,
+        0.49852362, -0.70609387,  1.4438811 ,  0.44295626,  0.46770521,
+        0.10134479, -0.05935198, -2.38669774,  1.22217056, -0.81391201,
+        0.95626186, -0.63851056, -0.14312642, -0.22418983, -1.03849524,
+       -0.17170905,  0.47634618, -0.41417827, -1.26408334, -0.57321556,
+        0.24981732,  1.14720208,  0.83594396,  0.28740365, -0.9955963 ,
+        0.90688947,  0.02421074, -0.23998173,  0.91011056,  0.61784475,
+        0.49961804, -1.15154425, -0.6105164 , -1.70388541,  0.19443738,
+        0.02824125,  0.93256051,  0.21204332, -0.36794457,  2.1114884 ])</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">np.random.randn(<span class="number">100</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>array([-1.02957349, -1.33628031, -0.61056736,  0.52469426, -0.34930813,
+       -0.44073846, -1.1212876 ,  1.47284473, -0.62337224, -1.08070195,
+       -0.12253009, -0.8077431 , -0.23255622,  1.33515034, -0.44645673,
+       -0.04978868, -0.36854478, -0.19173957,  0.81967992,  0.53163372,
+       -0.34161504, -0.93090048, -0.13421699,  0.83259361, -0.01735327,
+       -0.12765822, -1.80791662,  0.99396898, -1.49112886, -1.28210748,
+       -0.37570741,  0.03464388,  0.04507816, -0.76374689, -0.31313851,
+       -0.60698954, -1.80955123, -0.25551774, -0.69379935,  0.41919776,
+       -0.14520019,  0.9638013 ,  0.69622199,  0.89940546,  1.20837807,
+        0.6932537 , -0.16636061,  1.35311311, -0.92862651, -0.03547249,
+        0.85964595, -0.28749661,  0.71494995, -0.8034526 , -0.54048196,
+        0.54617743,  0.71188926,  1.19715449, -0.07006703,  0.29822712,
+        0.62619261,  0.46743206, -1.30262143, -0.57008965,  1.44295001,
+       -1.24399513,  0.62888033, -0.42559213,  1.00320956, -0.77817761,
+        0.04894463, -2.02640189, -0.04193635,  1.07454278, -1.5008594 ,
+        1.18574443, -0.71508124, -0.05123853, -2.77458336,  1.07862813,
+       -0.87568592, -0.53810932, -1.2782157 , -0.99276945,  1.14342789,
+       -0.5090726 ,  0.89500094, -0.17620337,  0.34608347, -0.50631013,
+        0.42716402,  2.58856959,  0.65289301,  0.50583979, -0.47595083,
+        1.01090874,  1.35920097, -1.70208997, -1.38033223,  2.10177668])</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># y = 2x+1+噪声</span></span><br><span class="line">y_data = <span class="number">2</span> * x_data + <span class="number">1.0</span> + np.random.randn(<span class="number">100</span>) * <span class="number">0.4</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="matplotlib画出生成结果"><a href="#matplotlib画出生成结果" class="headerlink" title="matplotlib画出生成结果"></a>matplotlib画出生成结果</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 画出随机生成数据散点图</span></span><br><span class="line">plt.scatter(x_data, y_data)</span><br></pre></td></tr></table></figure>
+<pre><code>&lt;matplotlib.collections.PathCollection at 0x22c32a84c18&gt;</code></pre><p><img alt="png" data-src="/2020/01/06/20200106-TensorFlow%E5%AE%9E%E7%8E%B0%E5%8D%95%E5%8F%98%E9%87%8F%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/output_11_1.png" class="lazyload"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 画出想要学习到的线性函数y = 2x + 1</span></span><br><span class="line">plt.scatter(x_data, y_data)</span><br><span class="line">plt.plot(x_data, <span class="number">1.0</span> + <span class="number">2</span> * x_data, color = <span class="string">'red'</span>, linewidth=<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+
+<pre><code>[&lt;matplotlib.lines.Line2D at 0x22c32b14f28&gt;]</code></pre><p><img alt="png" data-src="/2020/01/06/20200106-TensorFlow%E5%AE%9E%E7%8E%B0%E5%8D%95%E5%8F%98%E9%87%8F%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/output_12_1.png" class="lazyload"></p>
+<h2 id="构建模型"><a href="#构建模型" class="headerlink" title="构建模型"></a>构建模型</h2><h3 id="定义x和y的占位符"><a href="#定义x和y的占位符" class="headerlink" title="定义x和y的占位符"></a>定义x和y的占位符</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义训练数据的占位符，x是特征值，y是标签纸</span></span><br><span class="line">x = tf.placeholder(<span class="string">"float"</span>, name = <span class="string">"x"</span>)</span><br><span class="line">y = tf.placeholder(<span class="string">"float"</span>, name = <span class="string">"y"</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="构建回归模型"><a href="#构建回归模型" class="headerlink" title="构建回归模型"></a>构建回归模型</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义模型函数</span></span><br><span class="line"><span class="comment"># 通过训练模型求出最合适的w，b，使总的损失最小</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">model</span><span class="params">(x, w, b)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> tf.multiply(x, w) + b <span class="comment"># w*x+b</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="创建变量"><a href="#创建变量" class="headerlink" title="创建变量"></a>创建变量</h3><ul>
+<li>变量声明函数使tf.Variable</li>
+<li>变量作用是保存和更新模型参数   </li>
+<li>变量的初始化可以是随机数、常数，或者其他变量的初始值计算得到</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建变量</span></span><br><span class="line"><span class="comment"># 构建线性函数的斜率，变量w</span></span><br><span class="line">w = tf.Variable(<span class="number">1.0</span>, name = <span class="string">"w0"</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#构建线性函数的截距，变量b</span></span><br><span class="line">b = tf.Variable(<span class="number">0.0</span>, name = <span class="string">"b0"</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># pred是预测值，前向计算</span></span><br><span class="line">pred = model(x, w, b) <span class="comment">#即wx+b的计算值</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="训练模型"><a href="#训练模型" class="headerlink" title="训练模型"></a>训练模型</h2><h3 id="设置训练参数"><a href="#设置训练参数" class="headerlink" title="设置训练参数"></a>设置训练参数</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 迭代次数（训练轮数）</span></span><br><span class="line">train_epochs = <span class="number">10</span></span><br></pre></td></tr></table></figure>
+
+<p>关于学习率（learning_rate）的设置</p>
+<ul>
+<li>学习率作用：控制参数更新的幅度</li>
+<li>学习率设置过大：可能导致参数在极值附件来回摇摆，无法保证收敛</li>
+<li>学习率设置国小：虽然能保证收敛，但是优化速度大大降低，需要迭代次数更多次数才能达到比较理想的优化效果</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 学习率</span></span><br><span class="line">learning_rate = <span class="number">0.05</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 控制显示loss值的粒度</span></span><br><span class="line">display_step = <span class="number">10</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="定义损失函数"><a href="#定义损失函数" class="headerlink" title="定义损失函数"></a>定义损失函数</h3><ul>
+<li>损失函数用于描述预测值和真实值之间的误差，从而指导模型收敛方向</li>
+<li>常见损失函数：均方差（Mean Square Errir,MSE）和交叉熵（cross-entropy）</li>
+</ul>
+<p>$ L_2 损失函数 $</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 采用均方差作为损失函数</span></span><br><span class="line"></span><br><span class="line">loss_function = tf.reduce_mean(tf.square(y-pred)) <span class="comment"># reduce_mean平均值，square平方</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="定义优化器"><a href="#定义优化器" class="headerlink" title="定义优化器"></a>定义优化器</h3><ul>
+<li>定义优化器Optimizer，初始化一个GradientDescentOptimizer</li>
+<li>设置学习率和优化目标：最小化损失</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 梯度下降优化器</span></span><br><span class="line"><span class="comment"># GradientDescentOptimizer(learning_rate)学习率learning_rate来指导优化</span></span><br><span class="line"><span class="comment"># minimize(loss_function)把损失函数loss_function最小化</span></span><br><span class="line"></span><br><span class="line">optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss_function)</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建会话"><a href="#创建会话" class="headerlink" title="创建会话"></a>创建会话</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 声明会话</span></span><br><span class="line">sess = tf.Session()</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 变量初始化</span></span><br><span class="line">init = tf.global_variables_initializer()</span><br><span class="line"><span class="comment"># init是一个节点，需要run</span></span><br><span class="line">sess.run(init)</span><br></pre></td></tr></table></figure>
+
+<h3 id="迭代训练"><a href="#迭代训练" class="headerlink" title="迭代训练"></a>迭代训练</h3><p>模型训练阶段设置迭代轮次，每次通过将样本逐个输入模型，进行梯度下降优化操作，每轮迭代后绘制出模型曲线</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 显示损失值的训练</span></span><br><span class="line"><span class="comment"># 开始训练，轮次为epoch，采用SGD随机梯度下降优化方法</span></span><br><span class="line">step = <span class="number">0</span>   <span class="comment"># 记录训练步数</span></span><br><span class="line">loss_list = []  <span class="comment"># 用于保存loss值的列表</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> range(train_epochs):</span><br><span class="line">    <span class="keyword">for</span> xs, ys <span class="keyword">in</span> zip(x_data, y_data):</span><br><span class="line">        <span class="comment"># 模型优化，运行两个节点优化器和损失函数</span></span><br><span class="line">        <span class="comment"># 给占位符x和y填充真实值xs和ys</span></span><br><span class="line">        _, loss = sess.run([optimizer, loss_function], feed_dict=&#123;x:xs, y:ys&#125;)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 显示损失值loss</span></span><br><span class="line">        <span class="comment"># display_step：控制报告的粒度</span></span><br><span class="line">        <span class="comment"># 例如，如果display_step设为2，则将每训练2个样本输出一次损失值</span></span><br><span class="line">        <span class="comment"># 与超参数不同，修改display_step 不会更改模型所学习的规律</span></span><br><span class="line">        loss_list.append(loss)</span><br><span class="line">        step = step+<span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span> step % display_step == <span class="number">0</span>:</span><br><span class="line">            print(<span class="string">"Train Epoch:"</span>,<span class="string">'%02d'</span> % (epoch+<span class="number">1</span>), <span class="string">"Step:%03d"</span> % (step),<span class="string">"loss="</span>,<span class="string">"&#123;:.9f&#125;"</span>.format(loss))</span><br><span class="line">        </span><br><span class="line">    b0temp = b.eval(session=sess)</span><br><span class="line">    w0temp = w.eval(session=sess)</span><br><span class="line">    plt.plot (x_data, w0temp * x_data + b0temp) <span class="comment">#画图</span></span><br></pre></td></tr></table></figure>
+
+<pre><code>Train Epoch: 01 Step:010 loss= 0.053888980
+Train Epoch: 01 Step:020 loss= 0.000218245
+Train Epoch: 01 Step:030 loss= 0.019443041
+Train Epoch: 01 Step:040 loss= 0.589532554
+Train Epoch: 01 Step:050 loss= 0.000989183
+Train Epoch: 01 Step:060 loss= 0.142488658
+Train Epoch: 01 Step:070 loss= 0.046271212
+Train Epoch: 01 Step:080 loss= 0.008660123
+Train Epoch: 01 Step:090 loss= 0.241159379
+Train Epoch: 01 Step:100 loss= 0.000514947
+Train Epoch: 02 Step:110 loss= 0.317517459
+Train Epoch: 02 Step:120 loss= 0.032397330
+Train Epoch: 02 Step:130 loss= 0.093368128
+Train Epoch: 02 Step:140 loss= 0.332103789
+Train Epoch: 02 Step:150 loss= 0.060521714
+Train Epoch: 02 Step:160 loss= 0.024084859
+Train Epoch: 02 Step:170 loss= 0.178793266
+Train Epoch: 02 Step:180 loss= 0.006461896
+Train Epoch: 02 Step:190 loss= 0.129687995
+Train Epoch: 02 Step:200 loss= 0.013333416
+Train Epoch: 03 Step:210 loss= 0.129900724
+Train Epoch: 03 Step:220 loss= 0.023582600
+Train Epoch: 03 Step:230 loss= 0.096030191
+Train Epoch: 03 Step:240 loss= 0.317024857
+Train Epoch: 03 Step:250 loss= 0.069221057
+Train Epoch: 03 Step:260 loss= 0.018716505
+Train Epoch: 03 Step:270 loss= 0.193809599
+Train Epoch: 03 Step:280 loss= 0.009021518
+Train Epoch: 03 Step:290 loss= 0.121858403
+Train Epoch: 03 Step:300 loss= 0.015201909
+Train Epoch: 04 Step:310 loss= 0.117845014
+Train Epoch: 04 Step:320 loss= 0.022902815
+Train Epoch: 04 Step:330 loss= 0.096256405
+Train Epoch: 04 Step:340 loss= 0.315768689
+Train Epoch: 04 Step:350 loss= 0.069981642
+Train Epoch: 04 Step:360 loss= 0.018294554
+Train Epoch: 04 Step:370 loss= 0.195104137
+Train Epoch: 04 Step:380 loss= 0.009256961
+Train Epoch: 04 Step:390 loss= 0.121209100
+Train Epoch: 04 Step:400 loss= 0.015365199
+Train Epoch: 05 Step:410 loss= 0.116854727
+Train Epoch: 05 Step:420 loss= 0.022845931
+Train Epoch: 05 Step:430 loss= 0.096275523
+Train Epoch: 05 Step:440 loss= 0.315662980
+Train Epoch: 05 Step:450 loss= 0.070045985
+Train Epoch: 05 Step:460 loss= 0.018259227
+Train Epoch: 05 Step:470 loss= 0.195213363
+Train Epoch: 05 Step:480 loss= 0.009276883
+Train Epoch: 05 Step:490 loss= 0.121154651
+Train Epoch: 05 Step:500 loss= 0.015378974
+Train Epoch: 06 Step:510 loss= 0.116771445
+Train Epoch: 06 Step:520 loss= 0.022841139
+Train Epoch: 06 Step:530 loss= 0.096277155
+Train Epoch: 06 Step:540 loss= 0.315654010
+Train Epoch: 06 Step:550 loss= 0.070051350
+Train Epoch: 06 Step:560 loss= 0.018256264
+Train Epoch: 06 Step:570 loss= 0.195222735
+Train Epoch: 06 Step:580 loss= 0.009278628
+Train Epoch: 06 Step:590 loss= 0.121149838
+Train Epoch: 06 Step:600 loss= 0.015380217
+Train Epoch: 07 Step:610 loss= 0.116764441
+Train Epoch: 07 Step:620 loss= 0.022840742
+Train Epoch: 07 Step:630 loss= 0.096277267
+Train Epoch: 07 Step:640 loss= 0.315653324
+Train Epoch: 07 Step:650 loss= 0.070051797
+Train Epoch: 07 Step:660 loss= 0.018256038
+Train Epoch: 07 Step:670 loss= 0.195223376
+Train Epoch: 07 Step:680 loss= 0.009278720
+Train Epoch: 07 Step:690 loss= 0.121149674
+Train Epoch: 07 Step:700 loss= 0.015380275
+Train Epoch: 08 Step:710 loss= 0.116763875
+Train Epoch: 08 Step:720 loss= 0.022840688
+Train Epoch: 08 Step:730 loss= 0.096277334
+Train Epoch: 08 Step:740 loss= 0.315653145
+Train Epoch: 08 Step:750 loss= 0.070051856
+Train Epoch: 08 Step:760 loss= 0.018255942
+Train Epoch: 08 Step:770 loss= 0.195223376
+Train Epoch: 08 Step:780 loss= 0.009278720
+Train Epoch: 08 Step:790 loss= 0.121149503
+Train Epoch: 08 Step:800 loss= 0.015380275
+Train Epoch: 09 Step:810 loss= 0.116763793
+Train Epoch: 09 Step:820 loss= 0.022840688
+Train Epoch: 09 Step:830 loss= 0.096277334
+Train Epoch: 09 Step:840 loss= 0.315653145
+Train Epoch: 09 Step:850 loss= 0.070051923
+Train Epoch: 09 Step:860 loss= 0.018255910
+Train Epoch: 09 Step:870 loss= 0.195223585
+Train Epoch: 09 Step:880 loss= 0.009278766
+Train Epoch: 09 Step:890 loss= 0.121149339
+Train Epoch: 09 Step:900 loss= 0.015380275
+Train Epoch: 10 Step:910 loss= 0.116763711
+Train Epoch: 10 Step:920 loss= 0.022840671
+Train Epoch: 10 Step:930 loss= 0.096277304
+Train Epoch: 10 Step:940 loss= 0.315653145
+Train Epoch: 10 Step:950 loss= 0.070051856
+Train Epoch: 10 Step:960 loss= 0.018255973
+Train Epoch: 10 Step:970 loss= 0.195223376
+Train Epoch: 10 Step:980 loss= 0.009278720
+Train Epoch: 10 Step:990 loss= 0.121149503
+Train Epoch: 10 Step:1000 loss= 0.015380275</code></pre><p><img alt="png" data-src="/2020/01/06/20200106-TensorFlow%E5%AE%9E%E7%8E%B0%E5%8D%95%E5%8F%98%E9%87%8F%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/output_40_1.png" class="lazyload"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plt.plot(loss_list)</span><br></pre></td></tr></table></figure>
+
+<pre><code>[&lt;matplotlib.lines.Line2D at 0x22c32cef9e8&gt;]</code></pre><p><img alt="png" data-src="/2020/01/06/20200106-TensorFlow%E5%AE%9E%E7%8E%B0%E5%8D%95%E5%8F%98%E9%87%8F%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/output_41_1.png" class="lazyload"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plt.plot(loss_list,<span class="string">'r+'</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>[&lt;matplotlib.lines.Line2D at 0x22c32d45ba8&gt;]</code></pre><p><img alt="png" data-src="/2020/01/06/20200106-TensorFlow%E5%AE%9E%E7%8E%B0%E5%8D%95%E5%8F%98%E9%87%8F%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/output_42_1.png" class="lazyload"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> loss_list <span class="keyword">if</span> x&gt;<span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+
+<pre><code>[1.4533501,
+ 1.3507473,
+ 1.7046989,
+ 2.2887022,
+ 1.7251762,
+ 1.9852284,
+ 1.1750387,
+ 1.7792182,
+ 1.1360258,
+ 1.7623546,
+ 1.132765,
+ 1.7609351,
+ 1.1324903,
+ 1.7608157,
+ 1.1324672,
+ 1.7608054,
+ 1.1324654,
+ 1.7608048,
+ 1.1324649,
+ 1.7608048,
+ 1.1324646,
+ 1.7608044,
+ 1.1324649]</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 打印结果</span></span><br><span class="line">print(<span class="string">"w:"</span>, sess.run(w)) <span class="comment"># w的值应该在2附件</span></span><br><span class="line">print(<span class="string">"b:"</span>, sess.run(b)) <span class="comment"># b的值应该在1附近</span></span><br></pre></td></tr></table></figure>
+<pre><code>w: 1.9070293
+b: 1.0205086</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 可视化</span></span><br><span class="line">plt.scatter(x_data, y_data, label=<span class="string">"Original data"</span>)</span><br><span class="line">plt.plot(x_data,x_data * sess.run(w)+sess.run(b),label = <span class="string">"Fitted line"</span>, color = <span class="string">'r'</span>,linewidth = <span class="number">3</span>)</span><br><span class="line">plt.legend(loc = <span class="number">2</span>) <span class="comment"># 通过参数loc指定图例位置,左上角标签显示</span></span><br></pre></td></tr></table></figure>
+
+<pre><code>&lt;matplotlib.legend.Legend at 0x22c32da9c50&gt;</code></pre><p><img alt="png" data-src="/2020/01/06/20200106-TensorFlow%E5%AE%9E%E7%8E%B0%E5%8D%95%E5%8F%98%E9%87%8F%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/output_45_1.png" class="lazyload"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> xs,ys <span class="keyword">in</span> zip(x_data, y_data):</span><br><span class="line">    print(xs, ys)</span><br></pre></td></tr></table></figure>
+
+<pre><code>-1.0 -0.8296403329862183
+-0.9797979797979798 -0.907915867983997
+-0.9595959595959596 -0.6940069139116888
+-0.9393939393939394 -0.44008198904613316
+-0.9191919191919192 -0.518056298082633
+-0.898989898989899 -0.8872131046936622
+-0.8787878787878788 0.06789250806751634
+-0.8585858585858586 -0.7121223166059172
+-0.8383838383838383 -1.0266771956105798
+-0.8181818181818181 -0.8591953886106469
+-0.797979797979798 -0.6488803761421159
+-0.7777777777777778 -0.7072455496370039
+-0.7575757575757576 -0.5902689976300266
+-0.7373737373737373 -0.3485610146594407
+-0.7171717171717171 -1.7479096133940975
+-0.696969696969697 -0.7054166950286986
+-0.6767676767676767 0.02660252968277821
+-0.6565656565656566 -0.0879307925836007
+-0.6363636363636364 -0.5449888988689496
+-0.6161616161616161 -0.4821245885002341
+-0.5959595959595959 0.26427918331828665
+-0.5757575757575757 -0.2506067288023764
+-0.5555555555555556 -0.3231932210702846
+-0.5353535353535352 0.6715786910122715
+-0.5151515151515151 -0.17825188097185915
+-0.4949494949494949 0.2837997365730506
+-0.4747474747474747 0.03223693168166275
+-0.4545454545454545 0.11122375083990527
+-0.43434343434343425 -0.24757709110216308
+-0.41414141414141414 -0.15907779562657415
+-0.3939393939393939 0.7153506547917942
+-0.3737373737373737 -0.20303085077192035
+-0.3535353535353535 0.4038733399023537
+-0.33333333333333326 -0.14444505243328032
+-0.31313131313131304 0.2775626397745727
+-0.2929292929292928 0.39925810781510473
+-0.2727272727272727 -0.19732590501344383
+-0.2525252525252525 0.9488948450886014
+-0.23232323232323226 0.46183376274541277
+-0.21212121212121204 1.0616526671192374
+-0.19191919191919182 0.24245017816545178
+-0.1717171717171716 1.0213106217668546
+-0.1515151515151515 1.6306657350096654
+-0.13131313131313127 0.8239865196438662
+-0.11111111111111105 0.5189503868361454
+-0.09090909090909083 1.0096642401086826
+-0.07070707070707061 0.9149167196744973
+-0.050505050505050386 0.8149904585811949
+-0.030303030303030276 0.8911912817877188
+-0.010101010101010055 0.7482676667892594
+0.010101010101010166 1.1897490575186858
+0.030303030303030498 0.9056735152660633
+0.05050505050505061 0.7582628416820897
+0.07070707070707072 1.4675396986433764
+0.09090909090909105 1.1154917745706467
+0.11111111111111116 2.2803636003798076
+0.1313131313131315 1.1628383120003922
+0.1515151515151516 1.0160951450554574
+0.1717171717171717 1.1236354104889867
+0.19191919191919204 1.5322731640723288
+0.21212121212121215 1.145304101926237
+0.2323232323232325 0.9593259993800155
+0.2525252525252526 2.160735438968098
+0.27272727272727293 1.049396691090573
+0.29292929292929304 2.1913168930576616
+0.31313131313131315 1.682685252890624
+0.3333333333333335 1.2418274831113385
+0.3535353535353536 2.373622867698331
+0.3737373737373739 1.666093305866498
+0.39393939393939403 1.3848597766474662
+0.41414141414141437 1.8544466519948946
+0.4343434343434345 2.383265164003688
+0.4545454545454546 2.1825882359785482
+0.4747474747474749 2.2799928678691894
+0.49494949494949503 2.6916335195969485
+0.5151515151515154 2.11612862411466
+0.5353535353535355 2.2210329848716315
+0.5555555555555556 2.0207174449107415
+0.5757575757575759 1.5696376030735633
+0.595959595959596 2.13410532800663
+0.6161616161616164 2.8791147545271505
+0.6363636363636365 1.5803058214822543
+0.6565656565656568 2.8507097669957053
+0.6767676767676769 2.4581511830938827
+0.696969696969697 2.0297316523689455
+0.7171717171717173 2.4605312306459712
+0.7373737373737375 3.185276326406841
+0.7575757575757578 2.2858982398015972
+0.7777777777777779 2.8717930007143866
+0.7979797979797982 3.048565185453946
+0.8181818181818183 2.2775260373606914
+0.8383838383838385 2.9298524215469746
+0.8585858585858588 2.9312337782204096
+0.8787878787878789 2.5679147934505933
+0.8989898989898992 3.0719741637310634
+0.9191919191919193 2.6939061642837485
+0.9393939393939394 2.6478159049980237
+0.9595959595959598 2.425300119538972
+0.9797979797979799 3.1137879168962748
+1.0 2.82832400301817</code></pre><h2 id="进行预测"><a href="#进行预测" class="headerlink" title="进行预测"></a>进行预测</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">x_test = <span class="number">3.21</span></span><br><span class="line"></span><br><span class="line">predict = sess.run(pred, feed_dict = &#123;x:x_test&#125;)</span><br><span class="line">print(<span class="string">"预测值：%f"</span> %predict)</span><br><span class="line"></span><br><span class="line">target = <span class="number">2</span> * x_test +<span class="number">1.0</span></span><br><span class="line">print(<span class="string">"目标值：%f"</span> %target)</span><br></pre></td></tr></table></figure>
+<pre><code>预测值：7.142073
+目标值：7.420000</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 等价于上面的predict</span></span><br><span class="line">x_test = <span class="number">3.21</span></span><br><span class="line">predict = sess.run(w) * x_test + sess.run(b)</span><br><span class="line">print(<span class="string">"预测值：%f"</span> %predict)</span><br></pre></td></tr></table></figure>
+<pre><code>预测值：7.142073</code></pre></div></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Ben</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://smallbenxiong.github.io/2020/01/06/20200106-TensorFlow%E5%AE%9E%E7%8E%B0%E5%8D%95%E5%8F%98%E9%87%8F%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/">https://smallbenxiong.github.io/2020/01/06/20200106-TensorFlow%E5%AE%9E%E7%8E%B0%E5%8D%95%E5%8F%98%E9%87%8F%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://smallbenxiong.github.io">Ben Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/TensorFlow/">TensorFlow    </a><a class="post-meta__tags" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习    </a><a class="post-meta__tags" href="/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/">线性回归    </a></div><div class="post_share"><div class="social-share" data-image="https://www.gstatic.cn/devrel-devsite/prod/v18acaed6c9e1965881c7cfa6f3f9f69e7c37603f6d253114168821ce9e70c645/tensorflow/images/lockup.svg" data-sites="linkedin,google,facebook,twitter,weibo,wechat,qq,qzone"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script></div></div><div class="post-reward"><a class="reward-button"><i class="fa fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><img class="lazyload post-qr-code__img" src="/img/wechat.jpg"><div class="post-qr-code__desc">WeChat</div></li><li class="reward-item"><img class="lazyload post-qr-code__img" src="/img/alipay.jpg"><div class="post-qr-code__desc">Alipay</div></li></ul></div></a></div><nav class="pagination_post" id="pagination"><div class="next-post pull-full"><a href="/2019/12/20/20191220-Sqoop%E6%8A%A5%E9%94%99%E8%A7%A3%E5%86%B3/"><img class="next_cover lazyload" data-src="https://hadoop.apache.org/hadoop-logo.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="label">下一篇</div><div class="next_info"><span>Sqoop | Sqoop报错解决</span></div></a></div></nav><hr><div id="post-comment"><div class="comment_headling"><i class="fa fa-comments fa-fw" aria-hidden="true"></i><span> 评论</span></div><div id="gitalk-container"></div><script>var gitalk = new Gitalk({
+  clientID: '136904656b3e77920595',
+  clientSecret: 'ecdc12b452f40a56859f3bc90eced4fdd0ee9c15',
+  repo: 'blog-comments',
+  owner: 'smallbenxiong',
+  admin: 'smallbenxiong',
+  id: md5(decodeURI(location.pathname)),
+  language: 'zh-CN'
+})
+gitalk.render('gitalk-container')</script></div></div></div><footer id="footer" style="background-image: url(https://www.gstatic.cn/devrel-devsite/prod/v18acaed6c9e1965881c7cfa6f3f9f69e7c37603f6d253114168821ce9e70c645/tensorflow/images/lockup.svg)" data-type="photo"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2020 By Ben</div><div class="footer_custom_text">Hi, welcome to my <a href="https://smallbenxiong.github.io/">blog</a>!</div><div class="icp"><a href="https://smallbenxiong.github.io/"><img class="icp-icon" src="/img/icp.png"><span>晋ICP备19009621号-1</span></a></div></div></footer></div><section class="rightside" id="rightside"><div id="rightside-config-hide"><i class="fa fa-book" id="readmode" title="阅读模式"></i><i class="fa fa-plus" id="font_plus" title="放大字体"></i><i class="fa fa-minus" id="font_minus" title="缩小字体"></i><a class="translate_chn_to_cht" id="translateLink" href="javascript:translatePage();" title="简繁转换" target="_self">繁</a><i class="darkmode fa fa-moon-o" id="darkmode" title="夜间模式"></i></div><div id="rightside-config-show"><div id="rightside_config" title="设置"><i class="fa fa-cog" aria-hidden="true"></i></div><a id="to_comment" href="#post-comment" title="直达评论"><i class="scroll_to_comment fa fa-comments">  </i></a><i class="fa fa-list-ul close" id="mobile-toc-button" title="目录" aria-hidden="true"></i><i class="fa fa-arrow-up" id="go-up" title="回到顶部" aria-hidden="true"></i></div></section><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script><script async src="/js/search/algolia.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.15/dist/snackbar.min.js"></script><script id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><script src="/js/third-party/activate-power-mode.js"></script><script>POWERMODE.colorful = true; // make power mode colorful
+POWERMODE.shake = true; // turn off shake
+document.body.addEventListener('input', POWERMODE);
+</script><script src="/js/tw_cn.js"></script><script>translateInitilization()
+</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@latest/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/lazysizes@latest/lazysizes.min.js" async=""></script><div class="search-dialog" id="algolia-search"><div class="search-dialog__title" id="algolia-search-title">Algolia</div><div id="algolia-input-panel"><div id="algolia-search-input"></div></div><hr><div id="algolia-search-results"><div id="algolia-hits"></div><div id="algolia-pagination"></div><div id="algolia-stats"></div></div><span class="search-close-button"><i class="fa fa-times"></i></span></div><div class="search-mask"></div></body></html>
