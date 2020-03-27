@@ -1,25 +1,426 @@
-<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title> 水果识别 </title>
-<style type="text/css">
-html,body {
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
+<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><!DOCTYPE html><html><head>
+<style>
+/* line 16, ../sass/tmp.scss */
+* {
+  box-sizing: border-box;
 }
-iframe {
-    margin: 0;
-    border-style: none;
+
+/* line 19, ../sass/tmp.scss */
+.strips {
+  min-height: 100vh;
+  text-align: center;
+  overflow: hidden;
+  color: white;
+}
+/* line 24, ../sass/tmp.scss */
+.strips__strip {
+  will-change: width, left, z-index, height;
+  position: absolute;
+  width: 20%;
+  min-height: 100vh;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+/* line 32, ../sass/tmp.scss */
+.strips__strip:nth-child(1) {
+  left: 0;
+}
+/* line 35, ../sass/tmp.scss */
+.strips__strip:nth-child(2) {
+  left: 20vw;
+}
+/* line 38, ../sass/tmp.scss */
+.strips__strip:nth-child(3) {
+  left: 40vw;
+}
+/* line 41, ../sass/tmp.scss */
+.strips__strip:nth-child(4) {
+  left: 60vw;
+}
+/* line 44, ../sass/tmp.scss */
+.strips__strip:nth-child(5) {
+  left: 80vw;
+}
+/* line 48, ../sass/tmp.scss */
+.strips__strip:nth-child(1) .strip__content {
+  background: #244F75;
+  transform: translate3d(-100%, 0, 0);
+  animation-name: strip1;
+  animation-delay: 0.1s;
+}
+/* line 56, ../sass/tmp.scss */
+.strips__strip:nth-child(2) .strip__content {
+  background: #60BFBF;
+  transform: translate3d(0, 100%, 0);
+  animation-name: strip2;
+  animation-delay: 0.2s;
+}
+/* line 64, ../sass/tmp.scss */
+.strips__strip:nth-child(3) .strip__content {
+  background: #8C4B7E;
+  transform: translate3d(0, -100%, 0);
+  animation-name: strip3;
+  animation-delay: 0.3s;
+}
+/* line 72, ../sass/tmp.scss */
+.strips__strip:nth-child(4) .strip__content {
+  background: #F8BB44;
+  transform: translate3d(0, 100%, 0);
+  animation-name: strip4;
+  animation-delay: 0.4s;
+}
+/* line 80, ../sass/tmp.scss */
+.strips__strip:nth-child(5) .strip__content {
+  background: #F24B4B;
+  transform: translate3d(100%, 0, 0);
+  animation-name: strip5;
+  animation-delay: 0.5s;
+}
+@media screen and (max-width: 760px) {
+  /* line 24, ../sass/tmp.scss */
+  .strips__strip {
+    min-height: 20vh;
+  }
+  /* line 89, ../sass/tmp.scss */
+  .strips__strip:nth-child(1) {
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 100%;
+  }
+  /* line 94, ../sass/tmp.scss */
+  .strips__strip:nth-child(2) {
+    top: 20vh;
+    left: 0;
+    width: 100%;
+  }
+  /* line 99, ../sass/tmp.scss */
+  .strips__strip:nth-child(3) {
+    top: 40vh;
+    left: 0;
+    width: 100%;
+  }
+  /* line 104, ../sass/tmp.scss */
+  .strips__strip:nth-child(4) {
+    top: 60vh;
+    left: 0;
+    width: 100%;
+  }
+  /* line 109, ../sass/tmp.scss */
+  .strips__strip:nth-child(5) {
+    top: 80vh;
+    left: 0;
+    width: 100%;
+  }
 }
+/* line 116, ../sass/tmp.scss */
+.strips .strip__content {
+  animation-duration: 1s;
+  animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  animation-fill-mode: both;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+}
+/* line 130, ../sass/tmp.scss */
+.strips .strip__content:hover:before {
+  transform: skew(-30deg) scale(3) translate(0, 0);
+  opacity: 0.1;
+}
+/* line 135, ../sass/tmp.scss */
+.strips .strip__content:before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  opacity: 0.05;
+  transform-origin: center center;
+  transform: skew(-30deg) scaleY(1) translate(0, 0);
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+/* line 150, ../sass/tmp.scss */
+.strips .strip__inner-text {
+  will-change: transform, opacity;
+  position: absolute;
+  z-index: 5;
+  top: 50%;
+  left: 50%;
+  width: 70%;
+  transform: translate(-50%, -50%) scale(0.5);
+  opacity: 0;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+/* line 161, ../sass/tmp.scss */
+.strips__strip--expanded {
+  width: 100%;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 3;
+  cursor: default;
+}
+@media screen and (max-width: 760px) {
+  /* line 161, ../sass/tmp.scss */
+  .strips__strip--expanded {
+    min-height: 100vh;
+  }
+}
+/* line 172, ../sass/tmp.scss */
+.strips__strip--expanded .strip__content:hover:before {
+  transform: skew(-30deg) scale(1) translate(0, 0);
+  opacity: 0.05;
+}
+/* line 178, ../sass/tmp.scss */
+.strips__strip--expanded .strip__title {
+  opacity: 0;
+}
+/* line 181, ../sass/tmp.scss */
+.strips__strip--expanded .strip__inner-text {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* line 187, ../sass/tmp.scss */
+.strip__title {
+  display: block;
+  margin: 0;
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  font-size: 3.5vw;
+  color: white;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+@media screen and (max-width: 760px) {
+  /* line 187, ../sass/tmp.scss */
+  .strip__title {
+    font-size: 28px;
+  }
+}
+
+/* line 200, ../sass/tmp.scss */
+.strip__close {
+  position: absolute;
+  right: 3vw;
+  top: 3vw;
+  opacity: 0;
+  z-index: 10;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  cursor: pointer;
+  transition-delay: 0.5s;
+}
+/* line 209, ../sass/tmp.scss */
+.strip__close--show {
+  opacity: 1;
+}
+
+@keyframes strip1 {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes strip2 {
+  0% {
+    transform: translate3d(0, 100%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes strip3 {
+  0% {
+    transform: translate3d(0, -100%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes strip4 {
+  0% {
+    transform: translate3d(0, 100%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes strip5 {
+  0% {
+    transform: translate3d(100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+/* Demo purposes */
+/* line 255, ../sass/tmp.scss */
+body {
+  font-family: 'Open Sans';
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+  line-height: 1.5;
+}
+
+/* line 261, ../sass/tmp.scss */
+h1,
+h2 {
+  font-weight: 300;
+}
+
+/* line 265, ../sass/tmp.scss */
+.fa {
+  font-size: 30px;
+  color: white;
+}
+
+/* line 269, ../sass/tmp.scss */
+h2 {
+  font-size: 36px;
+  margin: 0 0 16px;
+}
+
+/* line 273, ../sass/tmp.scss */
+p {
+  margin: 0 0 16px;
+}
+
+/* line 276, ../sass/tmp.scss */
+body {
+  margin: 0;
+}
+
 </style>
 <meta name="generator" content="Hexo 4.1.1"><link rel="alternate" href="/atom.xml" title="Ben Blog" type="application/atom+xml">
 </head>
 <body>
-<iframe src="http://47.101.180.197/"></iframe>
-<script>document.write()</script>
+<script type="text/javascript" src="https://wow.techbrood.com/libs/jquery/jquery-2.1.1.min.js"></script><link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+<section class="strips">
+    <article class="strips__strip">
+        <div class="strip__content">
+            <h1 class="strip__title" data-name="Lorem">Awesome</h1>
+            <div class="strip__inner-text">
+                <h2>Ettrics</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia sapiente deserunt consectetur, quod reiciendis corrupti quo ea aliquid! Repellendus numquam quo, voluptate. Suscipit soluta omnis quibusdam facilis, illo voluptates odit!</p>
+                <p>
+                    <a href="https://twitter.com/ettrics" target="_blank"><i class="fa fa-twitter"></i></a>
+                </p>
+            </div>
+
+        </div>
+    </article>
+    <article class="strips__strip">
+        <div class="strip__content">
+            <h1 class="strip__title" data-name="Ipsum">Words</h1>
+            <div class="strip__inner-text">
+                <h2>Ettrics</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia sapiente deserunt consectetur, quod reiciendis corrupti quo ea aliquid! Repellendus numquam quo, voluptate. Suscipit soluta omnis quibusdam facilis, illo voluptates odit!</p>
+                <p>
+                    <a href="https://twitter.com/ettrics" target="_blank"><i class="fa fa-twitter"></i></a>
+                </p>
+            </div>
+        </div>
+    </article>
+    <article class="strips__strip">
+        <div class="strip__content">
+            <h1 class="strip__title" data-name="Dolor">Go</h1>
+            <div class="strip__inner-text">
+                <h2>Ettrics</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia sapiente deserunt consectetur, quod reiciendis corrupti quo ea aliquid! Repellendus numquam quo, voluptate. Suscipit soluta omnis quibusdam facilis, illo voluptates odit!</p>
+                <p>
+                    <a href="https://twitter.com/ettrics" target="_blank"><i class="fa fa-twitter"></i></a>
+                </p>
+            </div>
+        </div>
+    </article>
+    <article class="strips__strip">
+        <div class="strip__content">
+            <h1 class="strip__title" data-name="Sit">Inside</h1>
+            <div class="strip__inner-text">
+                <h2>Ettrics</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia sapiente deserunt consectetur, quod reiciendis corrupti quo ea aliquid! Repellendus numquam quo, voluptate. Suscipit soluta omnis quibusdam facilis, illo voluptates odit!</p>
+                <p>
+                    <a href="https://twitter.com/ettrics" target="_blank"><i class="fa fa-twitter"></i></a>
+                </p>
+            </div>
+        </div>
+    </article>
+    <article class="strips__strip">
+        <div class="strip__content">
+            <h1 class="strip__title" data-name="Amet">Here</h1>
+            <div class="strip__inner-text">
+                <h2>Ettrics</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia sapiente deserunt consectetur, quod reiciendis corrupti quo ea aliquid! Repellendus numquam quo, voluptate. Suscipit soluta omnis quibusdam facilis, illo voluptates odit!</p>
+                <p>
+                    <a href="https://twitter.com/ettrics" target="_blank"><i class="fa fa-twitter"></i></a>
+                </p>
+            </div>
+        </div>
+    </article>
+    <i class="fa fa-close strip__close"></i>
+</section>
+<script>
+var Expand = (function() {
+    var tile = $('.strips__strip');
+    var tileLink = $('.strips__strip > .strip__content');
+    var tileText = tileLink.find('.strip__inner-text');
+    var stripClose = $('.strip__close');
+
+    var expanded = false;
+
+    var open = function() {
+
+        var tile = $(this).parent();
+
+        if (!expanded) {
+            tile.addClass('strips__strip--expanded');
+            // add delay to inner text
+            tileText.css('transition', 'all .6s 1s cubic-bezier(0.23, 1, 0.32, 1)');
+            stripClose.addClass('strip__close--show');
+            stripClose.css('transition', 'all .6s 1s cubic-bezier(0.23, 1, 0.32, 1)');
+            expanded = true;
+        }
+    };
+
+    var close = function() {
+        if (expanded) {
+            tile.removeClass('strips__strip--expanded');
+            // remove delay from inner text
+            tileText.css('transition', 'all 0.15s 0 cubic-bezier(0.23, 1, 0.32, 1)');
+            stripClose.removeClass('strip__close--show');
+            stripClose.css('transition', 'all 0.2s 0s cubic-bezier(0.23, 1, 0.32, 1)')
+            expanded = false;
+        }
+    }
+
+    var bindActions = function() {
+        tileLink.on('click', open);
+        stripClose.on('click', close);
+    };
+
+    var init = function() {
+        bindActions();
+    };
+
+    return {
+        init: init
+    };
+
+}());
+
+Expand.init();
+</script>
+
 </body>
 </html>
